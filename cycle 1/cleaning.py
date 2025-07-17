@@ -10,6 +10,7 @@ warnings.filterwarnings("ignore")
 sns.set(style="whitegrid")
 pd.set_option('display.max_columns', None)
 
+
 # Load the dataset
 df = pd.read_csv("MentalHealth_Burnout.csv")  # Replace with your local file path if needed
 
@@ -113,7 +114,3 @@ sns.heatmap(df.corr(), annot=True, cmap='coolwarm', fmt=".2f")
 plt.title("Feature Correlation Heatmap")
 plt.show()
 
-
-# Save cleaned dataset for later use
-df.to_csv("cleaned_burnout_dataset.csv", index=False)
-print("Cleaned dataset saved successfully.")

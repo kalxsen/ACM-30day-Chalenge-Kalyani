@@ -12,7 +12,8 @@ pd.set_option('display.max_columns', None)  #shows all columns when df.hea() is 
 
 
 # Load the dataset
-df = pd.read_csv("mental_health_workplace.csv")  #to read the csv file
+# the column heading in the data was diffrent from original code but now i have corrected the column names in the code keeping the name in the dataset the same 
+df = pd.read_csv("mental_health_workplace_survey.csv")  #to read the csv file
 
 # Preview first few rows
 df.head() # shows first 5 rows specifically    
@@ -57,7 +58,7 @@ for col in categorical_cols:
 
 
 # Plot boxplots for key numeric features
-features = ['Work_hrs_per_day', 'Sleep_hours', 'Stress_level'] 
+features = ['WorkHoursPerWeek', 'SleepHours', 'StressLevel']
 for col in features:
     plt.figure(figsize=(6, 1.5))
     sns.boxplot(data=df, x=col)
@@ -70,24 +71,26 @@ def remove_outliers_iqr(df, col): # (df, col) meand it takes in df a data frame-
     Q1 = df[col].quantile(0.25) # um i didnt quite understand this part but apparently it takes 25 percentile of the data...and 25% of the data lies below this...um..yea..idk
     Q3 = df[col].quantile(0.75) # here 75% lies below this value 
     IQR = Q3 - Q1 #ok so this is called the interquartile range...it is the middle ie 50% of the data...ookayy??...tells how to spread out the central data apparently...what's going on ?..
-    lower_bound = Q1 - 1.5 * IQR
-    upper_bound = Q3 + 1.5 * IQR
+    lower_bound = Q1 - 1.5 * IQR # lower oultiner apparenly...how did they come up with 1.5 ?? oh, ok it's commonly used multiplier for IQR (Interquatrile Range)...i got more questions but nope..gotta move on...so we multiply the mid range with 1.5 (y multiply is it stretching the range or something?) then we take that part off of the 25 percentile...huh?..ohhh..gives lower bound...and 1.5 multiplied gives a less strict division of data to take as lower bound
+    upper_bound = Q3 + 1.5 * IQR # similarly for upper bound we get a value above the normal distribution range...
+
+    #ok..finally figured it out...Q1 was 25 percentile Q3 was my 75 percentile and Q3-Q1 gave me the medial range...multiplying the median range with a multiplier gave me a less strict range for median values...now we found the actual lower bound by Q1-1.5*IQR(interquatrile range ie that 50% thingy)...it would usually be a value less than Q1 (ig we are bassically widening the range we consider further by bringing the bar down futher incase of lower and furthur up in case of upper bounds respectively)....similary calculate upperbound with the formula above...it would give a value above the upper bound....now we ask it to take the values above lower bound and those below upper bound ig) 
 
     original_size = df.shape[0]
-    df = df[(df[col] >= lower_bound) & (df[col] <= upper_bound)]
-    removed = original_size - df.shape[0]
-    print(f"{removed} outliers removed from '{col}'")
+    df = df[(df[col] >= lower_bound) & (df[col] <= upper_bound)] # so this checks if the purticular row has values higher than lower bound and lower than upper bound....if yes then it stores it...
+    removed = original_size - df.shape[0] #finding the number of rows that were removed
+    print(f"{removed} outliers removed from '{col}'") # just a print statement that tells how many values were removed from that particular column
     return df
 
 # Remove outliers from important features
-for col in ['Work_hrs_per_day', 'Sleep_hours', 'Stress_level']:
-    df = remove_outliers_iqr(df, col)
+for col in ['WorkHoursPerWeek', 'StressLevel', 'SleepHours']: #defined the columns from which we wanted to remove outliners from
+    df = remove_outliers_iqr(df, col) # ran that function to remove it.
 
 
 
 # Burnout counts
-sns.countplot(x='Burnout', data=df)
-plt.title("Burnout Distribution")
+sns.countplot(x='BurnoutLevel', data=df)
+plt.title("Burnout Distribution")  # like matlab....nothing new....but the type of graph is diffrent
 plt.xlabel("Burnout (1 = Yes, 0 = No)")
 plt.ylabel("Count")
 plt.show()
@@ -95,8 +98,8 @@ plt.show()
 
 
 # Boxplot of Sleep_hours vs Burnout
-sns.boxplot(x='Burnout', y='Sleep_hours', data=df)
-plt.title("Sleep Hours by Burnout")
+sns.boxplot(x='BurnoutLevel', y='SleepHours', data=df)
+plt.title("Sleep Hours by Burnout")   # like matlab....nothing new....but the type of graph is diffrent
 plt.xlabel("Burnout (1 = Yes, 0 = No)")
 plt.ylabel("Sleep Hours")
 plt.show()
@@ -104,7 +107,7 @@ plt.show()
 
 
 # Scatterplot of Stress vs Sleep colored by Burnout
-sns.scatterplot(x='Sleep_hours', y='Stress_level', hue='Burnout', data=df, palette='coolwarm')
+sns.scatterplot(x='SleepHours', y='StressLevel', hue='BurnoutLevel', data=df, palette='coolwarm')
 plt.title("Stress vs Sleep (Colored by Burnout)")
 plt.xlabel("Sleep Hours")
 plt.ylabel("Stress Level")
@@ -114,6 +117,6 @@ plt.show()
 
 
 plt.figure(figsize=(10, 6))
-sns.heatmap(df.corr(), annot=True, cmap='coolwarm', fmt=".2f")
+sns.heatmap(df.select_dtypes(include='number').corr(), annot=True, cmap='coolwarm') # we changed it here a little cause male was not a numeric value and the code was trying to process it but now it only takes numeric values...
 plt.title("Feature Correlation Heatmap")
 plt.show()

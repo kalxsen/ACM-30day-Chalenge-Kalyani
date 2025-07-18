@@ -12,7 +12,7 @@ pd.set_option('display.max_columns', None)  #shows all columns when df.head() is
 
 
 # Load the dataset
-df = pd.read_csv("mental_health_workplace.csv")  #to read the csv file
+df = pd.read_csv("mental_health_workplace_survey.csv")  #to read the csv file
 
 # Preview first few rows
 df.head() # shows first 5 rows specifically    
@@ -52,7 +52,7 @@ for col in categorical_cols:
 
 
 # Plot boxplots for key numeric features
-features = ['Work_hrs_per_day', 'Sleep_hours', 'Stress_level']
+features = ['WorkHoursPerWeek', 'SleepHours', 'StressLevel']
 for col in features:
     plt.figure(figsize=(6, 1.5))
     sns.boxplot(data=df, x=col)
@@ -75,13 +75,13 @@ def remove_outliers_iqr(df, col):
     return df
 
 # Remove outliers from important features
-for col in ['Work_hrs_per_day', 'Sleep_hours', 'Stress_level']:
+for col in ['WorkHoursPerWeek', 'StressLevel', 'SleepHours']:
     df = remove_outliers_iqr(df, col)
 
 
 
 # Burnout counts
-sns.countplot(x='Burnout', data=df)
+sns.countplot(x='BurnoutLevel', data=df)
 plt.title("Burnout Distribution")
 plt.xlabel("Burnout (1 = Yes, 0 = No)")
 plt.ylabel("Count")
@@ -90,7 +90,7 @@ plt.show()
 
 
 # Boxplot of Sleep_hours vs Burnout
-sns.boxplot(x='Burnout', y='Sleep_hours', data=df)
+sns.boxplot(x='BurnoutLevel', y='SleepHours', data=df)
 plt.title("Sleep Hours by Burnout")
 plt.xlabel("Burnout (1 = Yes, 0 = No)")
 plt.ylabel("Sleep Hours")
@@ -99,7 +99,7 @@ plt.show()
 
 
 # Scatterplot of Stress vs Sleep colored by Burnout
-sns.scatterplot(x='Sleep_hours', y='Stress_level', hue='Burnout', data=df, palette='coolwarm')
+sns.scatterplot(x='SleepHours', y='StressLevel', hue='BurnoutLevel', data=df, palette='coolwarm')
 plt.title("Stress vs Sleep (Colored by Burnout)")
 plt.xlabel("Sleep Hours")
 plt.ylabel("Stress Level")
@@ -109,7 +109,7 @@ plt.show()
 
 
 plt.figure(figsize=(10, 6))
-sns.heatmap(df.corr(), annot=True, cmap='coolwarm', fmt=".2f")
+sns.heatmap(df.select_dtypes(include='number').corr(), annot=True, cmap='coolwarm')
 plt.title("Feature Correlation Heatmap")
 plt.show()
 

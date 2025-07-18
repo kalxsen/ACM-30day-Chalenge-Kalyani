@@ -1,15 +1,21 @@
-# Ignore virtual environments
+# Ignore virtual environment folders
 env/
 venv/
 
-# Bytecode
+# Byte-compiled / cache files
 __pycache__/
+*.py[cod]
+*$py.class
 
-# VS Code settings
-.vscode/
-
-# Jupyter notebooks checkpoints
+# Jupyter Notebook checkpoints
 .ipynb_checkpoints/
 
-# Mac/Linux hidden files
+# Environment variables / secrets
+.env
+
+# VS Code settings (optional)
+.vscode/
+
+# OS files
 .DS_Store
+Thumbs.db
